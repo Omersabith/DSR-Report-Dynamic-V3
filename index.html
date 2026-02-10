@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalesPulse | Corporate Reports</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -32,7 +31,6 @@
                     <option value="view4">4. Sales Analysis (Category Wise)</option>
                     <option value="view5">5. Individual Per Day Sales</option>
                 </select>
-                
                 <button id="admin-btn" class="admin-only" onclick="openAdminPanel()">Edit Data</button>
                 <button onclick="handleLogout()" class="logout-btn">Exit</button>
             </div>
@@ -42,9 +40,8 @@
             <div class="card">
                 <div class="table-header">
                     <h3 id="table-title">Report Title</h3>
-                    <button onclick="exportTableToCSV()">⬇ Export CSV</button>
+                    <button class="export-btn" onclick="exportTableToCSV()">⬇ Export CSV</button>
                 </div>
-                
                 <div class="table-responsive">
                     <table id="main-table">
                         <thead id="table-head"></thead>
@@ -57,8 +54,7 @@
 
     <div id="admin-modal" class="modal hidden">
         <div class="modal-content large-modal">
-            <h3>Update Data (JSON Format)</h3>
-            <p>Edit the raw data below to update the tables.</p>
+            <h3>Update Data (JSON Editor)</h3>
             <textarea id="json-input"></textarea>
             <div class="modal-actions">
                 <button class="cancel-btn" onclick="closeAdminPanel()">Cancel</button>
