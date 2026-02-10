@@ -2,7 +2,9 @@
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "password123";
 
+// --- INITIAL DATA STRUCTURE ---
 const defaultData = {
+    // VIEW 1: Active Period Analysis
     view1: {
         title: "February Performance: Active Period Analysis",
         headers: ["Category", "Total Sale", "Sales Volume (IR)", "Sales Volume (KDR)", "Sale Share"],
@@ -14,6 +16,8 @@ const defaultData = {
         ],
         total: { col1: "Grand total", col2: 46528, col3: 7581, col4: 38947, col5: "" }
     },
+
+    // VIEW 2: Monthly Analysis
     view2: {
         title: "Monthly Analysis and Summary Report",
         headers: ["Month", "Total Sale", "Sales Volume (IR)", "Sales Volume (KDR)", "Others"],
@@ -28,6 +32,8 @@ const defaultData = {
         ],
         total: { col1: "Grand total", col2: 1657449, col3: 759745, col4: 828846, col5: 68858 }
     },
+
+    // VIEW 3: KDR Channel Wise (Fixed to Object Structure)
     view3: {
         title: "KDR Channel Wise Sales Analysis",
         headers: ["Month", "Total", "Lulu", "Nesto", "Msouq", "Extra", "Hypermax", "Istyle", "Emax", "Others"],
@@ -43,15 +49,25 @@ const defaultData = {
         ],
         total: { col1: "Grand total", col2: 829412, col3: 400712, col4: 84665, col5: 69743, col6: 179641, col7: 32308, col8: 18970, col9: 35276, col10: 8095 }
     },
+
+    // VIEW 4: Sales Analysis Category Wise (Full Historical Data)
     view4: {
         title: "Sales Analysis Category Wise",
         headers: ["Month", "Charging", "Soundcore", "Eufy Appliances", "Eufy Security", "Sales Share"],
         rows: [
+            { col1: "Aug-25", col2: 142517, col3: 153450, col4: 21345, col5: 24149, col6: "" },
+            { col1: "Sep-25", col2: 98463, col3: 63187, col4: 18780, col5: 11817, col6: "" },
+            { col1: "Oct-25", col2: 87097, col3: 130781, col4: 37778, col5: 21446, col6: "" },
+            { col1: "Nov-25", col2: 103614, col3: 69448, col4: 46463, col5: 22007, col6: "" },
+            { col1: "Dec-25", col2: 112568, col3: 109442, col4: 27729, col5: 14714, col6: "" },
             { col1: "Jan-26", col2: 123615, col3: 113353, col4: 28748, col5: 17425, col6: "" },
-            { col1: "Feb-26", col2: 25527, col3: 23930, col4: 5979, col5: 2077, col6: "" }
+            { col1: "Feb-26", col2: 30733, col3: 25096, col4: 5979, col5: 2086, col6: "" },
+            { col1: "-", col2: "", col3: "", col4: "", col5: "", col6: "" }
         ],
-        total: { col1: "Grand total", col2: 693401, col3: 663591, col4: 186822, col5: 113636, col6: 0 }
+        total: { col1: "Grand total", col2: 698607, col3: 664757, col4: 186822, col5: 113645, col6: "" }
     },
+
+    // VIEW 5: Individual Per Day
     view5: {
         title: "Individual Per Day Sales",
         headers: ["Sales Executive", "Target", "Today Sale", "Return", "MTD", "Achieved %", "Req Avg", "Trg Avg"],
@@ -65,9 +81,12 @@ const defaultData = {
     }
 };
 
-let db = JSON.parse(localStorage.getItem('salesDB_v4')) || defaultData;
+// --- STATE MANAGEMENT ---
+// Updated to v6 to ensure new data structure loads
+let db = JSON.parse(localStorage.getItem('salesDB_v6')) || defaultData;
 let isAdmin = false;
 
+// --- AUTHENTICATION ---
 function handleLogin() {
     const u = document.getElementById('username').value;
     const p = document.getElementById('password').value;
@@ -85,6 +104,7 @@ function handleLogout() {
     document.getElementById('dashboard-container').classList.add('hidden');
 }
 
+// --- CORE FUNCTIONS ---
 function loadDashboard() {
     document.getElementById('login-container').classList.add('hidden');
     document.getElementById('dashboard-container').classList.remove('hidden');
@@ -96,7 +116,9 @@ function switchView() {
     const selector = document.getElementById('view-selector');
     const selectedKey = selector.value;
     const data = db[selectedKey];
+
     document.getElementById('table-title').innerText = data.title;
+
     const thead = document.getElementById('table-head');
     thead.innerHTML = "";
     const trHead = document.createElement('tr');
@@ -106,8 +128,10 @@ function switchView() {
         trHead.appendChild(th);
     });
     thead.appendChild(trHead);
+
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = "";
+
     data.rows.forEach(row => {
         const tr = document.createElement('tr');
         Object.values(row).forEach(val => {
@@ -118,6 +142,7 @@ function switchView() {
         });
         tbody.appendChild(tr);
     });
+
     if (data.total) {
         const trTotal = document.createElement('tr');
         trTotal.classList.add('total-row');
@@ -130,32 +155,45 @@ function switchView() {
     }
 }
 
+// --- ADMIN DATA EDITING (JSON MODE) ---
 function openAdminPanel() {
     document.getElementById('admin-modal').classList.remove('hidden');
     document.getElementById('json-input').value = JSON.stringify(db, null, 4);
 }
+
 function closeAdminPanel() {
     document.getElementById('admin-modal').classList.add('hidden');
 }
+
 function saveJsonData() {
     try {
-        db = JSON.parse(document.getElementById('json-input').value);
-        localStorage.setItem('salesDB_v4', JSON.stringify(db));
+        const input = document.getElementById('json-input').value;
+        const newDB = JSON.parse(input);
+        db = newDB;
+        localStorage.setItem('salesDB_v6', JSON.stringify(db));
         closeAdminPanel();
         switchView();
-        alert("Data updated!");
+        alert("Data updated successfully!");
     } catch (e) {
-        alert("Invalid JSON format.");
+        alert("Invalid JSON format. Please check your syntax.");
     }
 }
 
+// --- EXPORT TO CSV ---
 function exportTableToCSV() {
-    const data = db[document.getElementById('view-selector').value];
-    let csv = [data.headers.join(",")];
-    data.rows.forEach(row => csv.push(Object.values(row).join(",")));
-    if(data.total) csv.push(Object.values(data.total).join(","));
+    const selector = document.getElementById('view-selector');
+    const data = db[selector.value];
+    let csv = [];
+    csv.push(data.headers.join(","));
+    data.rows.forEach(row => {
+        csv.push(Object.values(row).join(","));
+    });
+    if(data.total) {
+        csv.push(Object.values(data.total).join(","));
+    }
+    const csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
+    link.href = URL.createObjectURL(csvFile);
     link.download = `${data.title}.csv`;
     link.click();
 }
