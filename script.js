@@ -1,5 +1,4 @@
 // --- CONFIGURATION ---
-// I have pre-filled your exact URL and Key here
 const SUPABASE_URL = 'https://iyxpvbvpampykfjffgol.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -10,60 +9,55 @@ const ADMIN_PASS = "password123";
 let db = {};
 let isAdmin = false;
 
-// --- LOGIN LOGIC ---
+// --- LOGIN ---
 function handleLogin() {
     const u = document.getElementById('username').value;
     const p = document.getElementById('password').value;
-
     if (u === ADMIN_USER && p === ADMIN_PASS) {
         isAdmin = true;
         loadDashboard();
     } else {
-        const err = document.getElementById('login-error');
-        err.style.display = 'block';
-        err.innerText = "Wrong password. Try again.";
+        document.getElementById('login-error').style.display = 'block';
     }
 }
 
-// --- CORE DASHBOARD LOGIC ---
+// --- CORE DASHBOARD ---
 function loadDashboard() {
-    // Hide Login, Show Dashboard
+    // 1. Hide Login
     document.getElementById('login-container').classList.add('hidden');
+    // 2. Show Dashboard
     document.getElementById('dashboard-container').classList.remove('hidden');
     
-    // Allow CSS to switch from "Center Flex" to "Block" for the dashboard
-    document.body.style.display = 'block'; 
+    // 3. CRITICAL FIX: Reset body layout from Flex (Center) to Block (Full Page)
+    document.body.style.display = 'block';
     document.body.style.backgroundColor = 'white';
 
-    if (isAdmin) {
-        document.getElementById('admin-btn').classList.remove('hidden');
-    }
-    
-    // Fetch Data
-    fetchFromCloud();
+    // 4. Show Admin Button if logged in
+    if (isAdmin) document.getElementById('admin-btn').classList.remove('hidden');
+
+    // 5. Load Data
+    fetchData();
 }
 
-async function fetchFromCloud() {
-    console.log("Fetching data...");
+async function fetchData() {
+    console.log("Fetching...");
     const { data, error } = await supabaseClient
         .from('sales_data')
         .select('content')
         .eq('id', 1)
         .single();
 
-    if (error) {
-        alert("Error loading data. Check console.");
-        console.error(error);
-    } else if (data) {
+    if (data) {
         db = data.content;
         renderTable();
+    } else {
+        console.error(error);
     }
 }
 
 function renderTable() {
     const viewKey = document.getElementById('view-selector').value;
     const data = db[viewKey];
-
     if (!data) return;
 
     document.getElementById('table-title').innerText = data.title;
@@ -72,10 +66,9 @@ function renderTable() {
     const thead = document.getElementById('table-head');
     thead.innerHTML = "<tr>" + data.headers.map(h => `<th>${h}</th>`).join('') + "</tr>";
 
-    // Body
+    // Rows
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = "";
-
     data.rows.forEach(row => {
         const tr = document.createElement('tr');
         Object.values(row).forEach(val => {
@@ -86,11 +79,11 @@ function renderTable() {
         tbody.appendChild(tr);
     });
 
-    // Total Row
+    // Total
     if (data.total) {
         const tr = document.createElement('tr');
-        tr.style.fontWeight = "bold";
-        tr.style.background = "#eef";
+        tr.style.fontWeight = 'bold';
+        tr.style.background = '#f1f5f9';
         Object.values(data.total).forEach(val => {
             const td = document.createElement('td');
             td.innerText = val.toLocaleString();
@@ -100,34 +93,40 @@ function renderTable() {
     }
 }
 
-// --- ADMIN LOGIC ---
+// --- EXPORT TOOLS ---
+function printReport() { window.print(); }
+
+function exportTableToCSV() {
+    const viewKey = document.getElementById('view-selector').value;
+    const data = db[viewKey];
+    let csv = data.headers.join(",") + "\n";
+    data.rows.forEach(row => {
+        csv += Object.values(row).join(",") + "\n";
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${viewKey}_report.csv`;
+    a.click();
+}
+
+// --- ADMIN ---
 function openAdminPanel() {
     document.getElementById('admin-modal').classList.remove('hidden');
     document.getElementById('json-input').value = JSON.stringify(db, null, 4);
 }
-
-function closeAdminPanel() {
-    document.getElementById('admin-modal').classList.add('hidden');
-}
+function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
 
 async function saveJsonData() {
     try {
         const newContent = JSON.parse(document.getElementById('json-input').value);
-        
-        const { error } = await supabaseClient
-            .from('sales_data')
-            .update({ content: newContent })
-            .eq('id', 1);
-
-        if (error) throw error;
-
-        alert("Saved to Cloud!");
+        await supabaseClient.from('sales_data').update({ content: newContent }).eq('id', 1);
+        alert("Saved!");
         closeAdminPanel();
-        fetchFromCloud(); // Refresh screen
-    } catch (e) {
-        alert("Error: " + e.message);
-    }
+        fetchData();
+    } catch(e) { alert("Error: " + e.message); }
 }
 
-// Event Listeners
 document.getElementById('view-selector').addEventListener('change', renderTable);

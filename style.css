@@ -1,39 +1,43 @@
-/* RESET & BASICS */
+:root {
+    --primary: #2563eb;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --border: #e2e8f0;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    /* This centers the login card vertically and horizontally */
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: #f1f5f9;
+    /* Default state: Flexbox to center the Login Card */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    color: #333;
 }
 
-/* HELPER CLASSES */
 .hidden { display: none !important; }
 
-/* LOGIN CARD DESIGN */
+/* --- LOGIN CARD (Centered) --- */
 #login-container {
     background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 2.5rem;
     width: 90%;
     max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
 }
 
-#login-container h2 { margin-bottom: 10px; color: #333; }
+#login-container h2 { color: var(--dark); margin-bottom: 1.5rem; }
 
 #login-container input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
     border-radius: 6px;
     font-size: 16px;
 }
@@ -41,116 +45,77 @@ body {
 #login-container button {
     width: 100%;
     padding: 12px;
-    background-color: #0056b3;
+    background: var(--primary);
     color: white;
+    font-weight: bold;
     border: none;
     border-radius: 6px;
-    font-size: 16px;
     cursor: pointer;
-    font-weight: 600;
+    font-size: 16px;
 }
 
-#login-container button:hover { background-color: #004494; }
-
 .viewer-btn {
-    background: none !important;
-    color: #666 !important;
+    background: transparent !important;
+    color: #64748b !important;
+    margin-top: 1rem;
     text-decoration: underline;
     font-size: 14px;
 }
 
-/* DASHBOARD LAYOUT */
+/* --- DASHBOARD (Full Screen) --- */
+/* The JS will switch body to display:block when this is active */
 #dashboard-container {
     width: 100%;
     max-width: 1200px;
+    margin: 0 auto;
     background: white;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    /* When dashboard is active, body flex must be overridden */
-    position: absolute; 
-    top: 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 
 header {
-    background: #1e293b;
+    background: var(--dark);
     color: white;
-    padding: 1rem;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
 }
 
-.logo { font-size: 1.2rem; font-weight: bold; }
+.logo { font-weight: bold; font-size: 1.2rem; }
+.nav-controls { display: flex; gap: 10px; }
 
-.nav-controls {
+/* --- ACTION BAR (Print/Export) --- */
+.action-bar {
+    padding: 1.5rem 2rem;
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
 }
 
-#view-selector {
-    padding: 8px;
-    border-radius: 4px;
-    border: none;
-}
-
-button.exit-btn {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
+.btn-group button {
+    padding: 8px 16px;
+    margin-left: 8px;
     cursor: pointer;
-}
-
-/* TABLE STYLING */
-main { padding: 20px; overflow-x: auto; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.95rem;
-}
-
-th, td {
-    border: 1px solid #e2e8f0;
-    padding: 12px;
-    text-align: left;
-}
-
-th { background-color: #f8fafc; color: #333; font-weight: 600; }
-tr:nth-child(even) { background-color: #f9f9f9; }
-
-/* ADMIN MODAL */
-.modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
+    border: 1px solid var(--border);
     background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    border-radius: 4px;
 }
 
-textarea {
-    width: 100%;
-    height: 300px;
-    padding: 10px;
-    font-family: monospace;
-    border: 1px solid #ccc;
+/* --- TABLE --- */
+.table-wrapper { padding: 0 2rem 2rem 2rem; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th { background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid var(--border); color: #475569; }
+td { padding: 12px; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) { background: #fcfcfc; }
+
+/* --- ADMIN MODAL --- */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
 }
+.modal-content { background: white; padding: 2rem; width: 90%; max-width: 600px; border-radius: 8px; }
+textarea { width: 100%; height: 300px; margin-bottom: 1rem; font-family: monospace; }

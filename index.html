@@ -11,16 +11,16 @@
 
     <div id="login-container">
         <h2>SalesPulse Login</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button type="button" onclick="handleLogin()">Login</button>
-        <p id="login-error" style="color: red; display: none;">Invalid Credentials</p>
+        <input type="text" id="username" placeholder="Username (admin)">
+        <input type="password" id="password" placeholder="Password (password123)">
+        <button onclick="handleLogin()">Login</button>
         <button class="viewer-btn" onclick="loadDashboard()">Continue as Viewer</button>
+        <p id="login-error" style="color:red; display:none; margin-top:10px;">Invalid Credentials</p>
     </div>
 
     <div id="dashboard-container" class="hidden">
         <header>
-            <div class="logo">SalesPulse</div>
+            <div class="logo">SalesPulse Reports</div>
             <div class="nav-controls">
                 <select id="view-selector">
                     <option value="view1">1. Active Period (Feb)</option>
@@ -29,28 +29,33 @@
                     <option value="view4">4. Category Analysis</option>
                     <option value="view5">5. Individual Sales</option>
                 </select>
-                <button id="admin-btn" class="hidden" onclick="openAdminPanel()">Edit</button>
-                <button class="exit-btn" onclick="location.reload()">Exit</button>
+                <button id="admin-btn" class="hidden" onclick="openAdminPanel()">⚙️ Edit</button>
+                <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Exit</button>
             </div>
         </header>
 
-        <main>
-            <h3 id="table-title">Report</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead id="table-head"></thead>
-                    <tbody id="table-body"></tbody>
-                </table>
+        <div class="action-bar">
+            <h3 id="table-title">Report Title</h3>
+            <div class="btn-group">
+                <button onclick="printReport()">🖨️ Print</button>
+                <button onclick="exportTableToCSV()">⬇️ CSV</button>
             </div>
-        </main>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="admin-modal" class="modal hidden">
         <div class="modal-content">
-            <h3>Edit Data (JSON)</h3>
+            <h3>Edit Cloud Data</h3>
             <textarea id="json-input"></textarea>
-            <button onclick="saveJsonData()" style="background: #22c55e; color: white; padding: 10px; border:none; cursor:pointer;">Save Global</button>
-            <button onclick="closeAdminPanel()" style="background: #ef4444; color: white; padding: 10px; border:none; cursor:pointer;">Cancel</button>
+            <button onclick="saveJsonData()" style="background:#2563eb; color:white; padding:10px; border:none; cursor:pointer;">Save Global</button>
+            <button onclick="closeAdminPanel()" style="background:#ccc; padding:10px; border:none; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
