@@ -3,52 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesPulse | Corporate Reports</title>
-    <style>.hidden { display: none !important; }</style>
+    <title>SalesPulse | Corporate Reporting</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div id="login-container" class="login-card">
-        <h2>SalesPulse Login</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password"> 
-        <button onclick="handleLogin()">Login</button>
-        <p id="login-error" style="color: red;"></p>
-        <button class="viewer-btn" onclick="loadDashboard()">Continue as Viewer</button>
+    <div id="login-container">
+        <div class="login-card">
+            <h2>SalesPulse Login</h2>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Username" autocomplete="off">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            <button class="primary-btn" onclick="handleLogin()">Login</button>
+            <p id="login-error"></p>
+            <button class="viewer-link" onclick="loadDashboard()">Continue as Viewer</button>
+        </div>
     </div>
 
     <div id="dashboard-container" class="hidden">
         <header>
-            <div class="logo">SalesPulse</div>
-            <select id="view-selector" onchange="switchView()">
-                <option value="view1">Feb Performance</option>
-                <option value="view2">Monthly Analysis</option>
-                <option value="view3">KDR Analysis</option>
-                <option value="view4">Category Analysis</option>
-                <option value="view5">Executive Sales</option>
-            </select>
-            <button id="admin-btn" class="hidden" onclick="openAdminPanel()">Edit Data</button>
-            <button onclick="location.reload()">Logout</button>
+            <div class="brand">SalesPulse <span>DSR</span></div>
+            <div class="controls">
+                <select id="view-selector" onchange="switchView()">
+                    <option value="view1">Active Period Analysis</option>
+                    <option value="view2">Monthly Analysis</option>
+                    <option value="view3">KDR Channel Analysis</option>
+                    <option value="view4">Category Analysis</option>
+                    <option value="view5">Executive Performance</option>
+                </select>
+                <button id="admin-btn" class="hidden admin-pill" onclick="openAdminPanel()">Edit Data</button>
+                <button class="logout-btn" onclick="location.reload()">Exit</button>
+            </div>
         </header>
 
         <main>
-            <h3 id="table-title"></h3>
-            <div class="table-container">
-                <table>
-                    <thead id="table-head"></thead>
-                    <tbody id="table-body"></tbody>
-                </table>
+            <div class="report-area">
+                <div class="report-header">
+                    <h2 id="table-title">Select a Report</h2>
+                    <button class="print-btn" onclick="window.print()">🖨️ Print PDF</button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="data-table">
+                        <thead id="table-head"></thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
 
     <div id="admin-modal" class="modal hidden">
         <div class="modal-content">
-            <textarea id="json-input"></textarea>
-            <button onclick="saveJsonData()">Save Globally</button>
-            <button onclick="closeAdminPanel()">Cancel</button>
+            <h3>Update Master Data (JSON)</h3>
+            <p>Paste your updated JSON below to refresh the dashboard for everyone.</p>
+            <textarea id="json-input" spellcheck="false"></textarea>
+            <div class="modal-actions">
+                <button class="save-btn" onclick="saveJsonData()">Save Globally</button>
+                <button class="close-btn" onclick="closeAdminPanel()">Cancel</button>
+            </div>
         </div>
     </div>
 
