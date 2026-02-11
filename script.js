@@ -12,7 +12,6 @@ let isAdmin = false;
 // --- CORE DATA LOGIC ---
 
 async function loadFromCloud() {
-    // This fetches the data from Supabase so everyone sees the same thing
     const { data, error } = await supabaseClient
         .from('sales_data')
         .select('content')
@@ -23,24 +22,24 @@ async function loadFromCloud() {
         console.error("Fetch Error:", error);
     } else {
         db = data.content;
-        switchView();
+        // Only refresh table if the dashboard is actually visible
+        if (!document.getElementById('dashboard-container').classList.contains('hidden')) {
+            switchView();
+        }
     }
 }
 
 async function saveJsonData() {
     try {
         const updatedContent = JSON.parse(document.getElementById('json-input').value);
-        
-        // This saves the data to Supabase globally
         const { error } = await supabaseClient
             .from('sales_data')
             .update({ content: updatedContent })
             .eq('id', 1);
 
         if (error) throw error;
-
         db = updatedContent;
-        alert("Global Update Successful! Everyone now sees the updated Page 4 and totals.");
+        alert("Success! Global Data Updated.");
         closeAdminPanel();
         switchView();
     } catch (e) {
@@ -53,6 +52,7 @@ async function saveJsonData() {
 function handleLogin() {
     const u = document.getElementById('username').value;
     const p = document.getElementById('password').value;
+    
     if(u === ADMIN_USER && p === ADMIN_PASS) {
         isAdmin = true;
         loadDashboard();
@@ -62,9 +62,16 @@ function handleLogin() {
 }
 
 function loadDashboard() {
+    // Hide login, show dashboard
     document.getElementById('login-container').classList.add('hidden');
     document.getElementById('dashboard-container').classList.remove('hidden');
-    if(isAdmin) document.getElementById('admin-btn').classList.remove('hidden');
+    
+    // Show admin button only if logged in as admin
+    if(isAdmin) {
+        document.getElementById('admin-btn').classList.remove('hidden');
+    }
+    
+    // Ensure we have the latest cloud data before showing
     loadFromCloud();
 }
 
@@ -74,13 +81,11 @@ function switchView() {
     if(!data) return;
 
     document.getElementById('table-title').innerText = data.title;
-    
     const thead = document.getElementById('table-head');
     thead.innerHTML = "<tr>" + data.headers.map(h => `<th>${h}</th>`).join('') + "</tr>";
 
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = "";
-    
     data.rows.forEach(row => {
         const tr = document.createElement('tr');
         Object.values(row).forEach(val => {
@@ -104,8 +109,6 @@ function switchView() {
     }
 }
 
-function printReport() { window.print(); }
-
 function openAdminPanel() {
     document.getElementById('admin-modal').classList.remove('hidden');
     document.getElementById('json-input').value = JSON.stringify(db, null, 4);
@@ -115,16 +118,5 @@ function closeAdminPanel() {
     document.getElementById('admin-modal').classList.add('hidden');
 }
 
-function exportTableToCSV() {
-    const viewKey = document.getElementById('view-selector').value;
-    const data = db[viewKey];
-    let csv = [data.headers.join(",")];
-    data.rows.forEach(row => csv.push(Object.values(row).join(",")));
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
-    link.download = `${viewKey}.csv`;
-    link.click();
-}
-
-// Start by fetching data
+// Background fetch so data is ready
 loadFromCloud();

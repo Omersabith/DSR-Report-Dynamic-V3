@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalesPulse | Corporate Reports</title>
+    <style>.hidden { display: none !important; }</style>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -11,8 +12,8 @@
 
     <div id="login-container" class="login-card">
         <h2>SalesPulse Login</h2>
-        <input type="text" id="username" placeholder="Username (admin)">
-        <input type="password" id="password" placeholder="Password (password123)">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password"> 
         <button onclick="handleLogin()">Login</button>
         <p id="login-error" style="color: red;"></p>
         <button class="viewer-btn" onclick="loadDashboard()">Continue as Viewer</button>
@@ -20,47 +21,34 @@
 
     <div id="dashboard-container" class="hidden">
         <header>
-            <div class="logo">SalesPulse <span>Reports</span></div>
-            <div class="nav-controls">
-                <select id="view-selector" onchange="switchView()">
-                    <option value="view1">1. Active Period Analysis (Feb)</option>
-                    <option value="view2">2. Monthly Analysis & Summary</option>
-                    <option value="view3">3. KDR Channel Analysis</option>
-                    <option value="view4">4. Sales Analysis (Category Wise)</option>
-                    <option value="view5">5. Individual Per Day Sales</option>
-                </select>
-                <button id="admin-btn" class="hidden" onclick="openAdminPanel()">Edit Data</button>
-                <button class="exit-btn" onclick="location.reload()">Exit</button>
-            </div>
+            <div class="logo">SalesPulse</div>
+            <select id="view-selector" onchange="switchView()">
+                <option value="view1">Feb Performance</option>
+                <option value="view2">Monthly Analysis</option>
+                <option value="view3">KDR Analysis</option>
+                <option value="view4">Category Analysis</option>
+                <option value="view5">Executive Sales</option>
+            </select>
+            <button id="admin-btn" class="hidden" onclick="openAdminPanel()">Edit Data</button>
+            <button onclick="location.reload()">Logout</button>
         </header>
 
         <main>
-            <div class="report-card">
-                <div class="table-header">
-                    <h3 id="table-title">Report Title</h3>
-                    <div class="btn-group">
-                        <button class="print-btn" onclick="printReport()">🖨️ Print to PDF</button>
-                        <button class="export-btn" onclick="exportTableToCSV()">⬇ Export CSV</button>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead id="table-head"></thead>
-                        <tbody id="table-body"></tbody>
-                    </table>
-                </div>
+            <h3 id="table-title"></h3>
+            <div class="table-container">
+                <table>
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
             </div>
         </main>
     </div>
 
     <div id="admin-modal" class="modal hidden">
         <div class="modal-content">
-            <h3>Update Dashboard Data (JSON)</h3>
-            <textarea id="json-input" spellcheck="false"></textarea>
-            <div class="modal-btns">
-                <button class="save-btn" onclick="saveJsonData()">Save Globally</button>
-                <button class="cancel-btn" onclick="closeAdminPanel()">Cancel</button>
-            </div>
+            <textarea id="json-input"></textarea>
+            <button onclick="saveJsonData()">Save Globally</button>
+            <button onclick="closeAdminPanel()">Cancel</button>
         </div>
     </div>
 
