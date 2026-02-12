@@ -3,59 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesPulse Dashboard</title>
+    <title>SalesPulse V5 | Corporate Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div id="login-container">
-        <h2>SalesPulse Login</h2>
-        <input type="text" id="username" placeholder="Username (admin)">
-        <input type="password" id="password" placeholder="Password (password123)">
-        <button onclick="handleLogin()">Login</button>
-        <button class="viewer-btn" onclick="loadDashboard()">Continue as Viewer</button>
-        <p id="login-error" style="color:red; display:none; margin-top:10px;">Invalid Credentials</p>
+    <div id="login-container" class="login-wrapper">
+        <div class="login-card">
+            <h2>SalesPulse V5</h2>
+            <p>Corporate Access</p>
+            <input type="text" id="username" placeholder="User ID">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="attemptLogin()">Access Dashboard</button>
+            <p id="error-msg" class="hidden">Invalid Credentials</p>
+            <div class="login-footer">
+                <small>Admin: admin / password123</small><br>
+                <small>Guest: guest / 1234</small>
+            </div>
+        </div>
     </div>
 
     <div id="dashboard-container" class="hidden">
+        
         <header>
-            <div class="logo">SalesPulse Reports</div>
-            <div class="nav-controls">
-                <select id="view-selector">
-                    <option value="view1">1. Active Period (Feb)</option>
-                    <option value="view2">2. Monthly Summary</option>
-                    <option value="view3">3. Channel Analysis</option>
-                    <option value="view4">4. Category Analysis</option>
-                    <option value="view5">5. Individual Sales</option>
-                </select>
-                <button id="admin-btn" class="hidden" onclick="openAdminPanel()">⚙️ Edit</button>
-                <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Exit</button>
+            <div class="brand">
+                <h1>SalesPulse <span class="highlight">Corporate</span></h1>
+                <span class="badge">Feb 12 Live</span>
+            </div>
+            <div class="controls no-print">
+                <button onclick="printReport()" class="btn-secondary">🖨️ Print / PDF</button>
+                <button id="admin-btn" onclick="toggleAdmin()" class="btn-danger hidden">Update Data</button>
+                <button onclick="logout()" class="btn-logout">Logout</button>
             </div>
         </header>
 
-        <div class="action-bar">
-            <h3 id="table-title">Report Title</h3>
-            <div class="btn-group">
-                <button onclick="printReport()">🖨️ Print</button>
-                <button onclick="exportTableToCSV()">⬇️ CSV</button>
+        <section class="kpi-grid">
+            <div class="card kpi-card">
+                <h3>Total Revenue</h3>
+                <p class="kpi-value" id="kpi-revenue">Loading...</p>
+                <span class="trend up">▲ MTD Growth</span>
             </div>
+            <div class="card kpi-card">
+                <h3>Growth %</h3>
+                <p class="kpi-value" id="kpi-growth">Loading...</p>
+                <span class="trend neutral">vs Last Month</span>
+            </div>
+            <div class="card kpi-card">
+                <h3>Top Performer</h3>
+                <p class="kpi-value" id="kpi-top">Loading...</p>
+                <span class="trend">Sales Executive</span>
+            </div>
+        </section>
+
+        <section class="charts-grid page-break">
+            <div class="card chart-card full-width">
+                <h3>Daily Sales Tracker (Feb)</h3>
+                <canvas id="trackerChart"></canvas>
+            </div>
+            
+            <div class="card chart-card">
+                <h3>Category Share (%)</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="card chart-card">
+                <h3>Revenue Trend (6 Months)</h3>
+                <canvas id="trendChart"></canvas>
+            </div>
+        </section>
+
+        <div class="toolbar no-print">
+            <input type="text" id="tableSearch" placeholder="Search tables (e.g. 'Manseer', 'Lulu', 'Jan')..." onkeyup="filterTables()">
         </div>
 
-        <div class="table-wrapper">
-            <table>
-                <thead id="table-head"></thead>
-                <tbody id="table-body"></tbody>
-            </table>
-        </div>
+        <section class="data-section">
+            
+            <div class="card table-card full-width">
+                <h3>1. Individual Sales Report (Daily)</h3>
+                <div class="table-responsive">
+                    <table id="t1-individual">
+                        <thead><tr><th>Executive</th><th>Target</th><th>Last Day</th><th>MTD Sales</th><th>Achieved %</th><th>Req Avg/Day</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <h3>2. Active Period Analysis</h3>
+                <div class="table-responsive">
+                    <table id="t2-active">
+                        <thead><tr><th>Category</th><th>Total Sale</th><th>Vol (IR)</th><th>Vol (KDR)</th><th>Share %</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <h3>3. Monthly Sales History</h3>
+                <div class="table-responsive">
+                    <table id="t3-monthly">
+                        <thead><tr><th>Month</th><th>Total Sale</th><th>Vol (IR)</th><th>Vol (KDR)</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card table-card full-width page-break">
+                <h3>4. KDR Channel Wise Sales</h3>
+                <div class="table-responsive">
+                    <table id="t4-channel">
+                        <thead><tr><th>Month</th><th>Total</th><th>Lulu</th><th>Nesto</th><th>MSouq</th><th>Extra</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <h3>5. Category History</h3>
+                <div class="table-responsive">
+                    <table id="t5-category">
+                        <thead><tr><th>Category</th><th>Jan 2026</th><th>Feb 2026</th><th>Share %</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
     </div>
 
-    <div id="admin-modal" class="modal hidden">
+    <div id="admin-panel" class="modal hidden no-print">
         <div class="modal-content">
-            <h3>Edit Cloud Data</h3>
-            <textarea id="json-input"></textarea>
-            <button onclick="saveJsonData()" style="background:#2563eb; color:white; padding:10px; border:none; cursor:pointer;">Save Global</button>
-            <button onclick="closeAdminPanel()" style="background:#ccc; padding:10px; border:none; cursor:pointer;">Cancel</button>
+            <h3>Update Database</h3>
+            <textarea id="json-input" placeholder="Paste new JSON here..."></textarea>
+            <div class="modal-actions">
+                <button onclick="validateAndPush()" class="btn-primary">Push Update</button>
+                <button onclick="toggleAdmin()" class="btn-secondary">Close</button>
+            </div>
         </div>
     </div>
 
