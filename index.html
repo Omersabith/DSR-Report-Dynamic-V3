@@ -4,40 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalesPulse V5 | Production</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-card { background: var(--card); padding: 40px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
+        input { width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
+        button { background: var(--accent); border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #dashboard-main { display: none; width: 100%; height: 100vh; padding: 20px; box-sizing: border-box; }
+    </style>
 </head>
 <body>
+
     <div id="login-container">
         <div class="login-card">
             <h1>SalesPulse V5</h1>
-            <input type="password" id="access-code" placeholder="Enter Access Code">
-            <div class="btn-row">
-                <button type="button" onclick="handleLogin('admin')">Admin</button>
-                <button type="button" onclick="handleLogin('guest')">Guest</button>
-            </div>
-            <p id="error-msg" style="color: #ff4d4d; margin-top: 10px;"></p>
+            <input type="password" id="access-code" placeholder="Enter Password">
+            <button onclick="handleLogin()">Login</button>
+            <p id="err" style="color: #ff4d4d;"></p>
         </div>
     </div>
 
-    <div id="dashboard-main" style="display: none;">
-        <nav class="top-nav">
-            <h2>SalesPulse Dashboard</h2>
-            <div id="admin-tag" style="display: none; background: #0ea5e9; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">ADMIN</div>
-        </nav>
-        
-        <div class="stats-grid">
-            <div class="stat-card"><label>Net Revenue</label><div id="disp-revenue">$0.00</div></div>
-            <div class="stat-card"><label>Total Units</label><div id="disp-units">0</div></div>
+    <div id="dashboard-main">
+        <h2>Dashboard Loaded Successfully</h2>
         </div>
 
-        <div class="visuals-grid">
-            <div class="chart-box full-width"><canvas id="lineChart"></canvas></div>
-            <div class="chart-box split"><canvas id="execBarChart"></canvas></div>
-            <div class="chart-box split"><canvas id="channelPieChart"></canvas></div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    <script>
+        // Use the code we discussed: 1234
+        function handleLogin() {
+            const code = document.getElementById('access-code').value;
+            if (code === '1234') {
+                document.getElementById('login-container').style.display = 'none';
+                document.body.style.display = 'block'; // Reset layout from flex
+                document.getElementById('dashboard-main').style.display = 'block';
+                console.log("Logged in!");
+            } else {
+                document.getElementById('err').innerText = "Wrong password.";
+            }
+        }
+    </script>
 </body>
 </html>
