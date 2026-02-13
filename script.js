@@ -1,5 +1,6 @@
-const URL = 'YOUR_SUPABASE_URL';
-const KEY = 'YOUR_SUPABASE_KEY';
+const URL = '
+https://iyxpvbvpampykfjffgol.supabase.co';
+const KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
 const supabaseClient = supabase.createClient(URL, KEY);
 
 async function handleLogin(role) {
