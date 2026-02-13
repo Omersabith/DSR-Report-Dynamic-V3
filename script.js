@@ -1,54 +1,61 @@
-const URL = '
-https://iyxpvbvpampykfjffgol.supabase.co';
-const KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
-const supabaseClient = supabase.createClient(URL, KEY);
+// 1. YOUR CONNECTION DATA
+const SB_URL = 'https://iyxpvbvpampykfjffgol.supabase.co'; 
+const SB_KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
+const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
+// 2. THE LOGIN FUNCTION
 async function handleLogin(role) {
-    const code = document.getElementById('access-code').value;
-    if (code === "1234") { // Replace with your code
+    const inputField = document.getElementById('access-code');
+    const errorMsg = document.getElementById('error-msg');
+    
+    // Set your desired password here (e.g., '1234')
+    if (inputField.value === '1234') {
+        console.log("Login successful as:", role);
+        
+        // Hide Login, Show Dashboard
         document.getElementById('login-container').style.display = 'none';
         const dashboard = document.getElementById('dashboard-main');
-        
-        // Ensure display is block so charts have width to work with
         dashboard.style.display = 'block';
-        
-        if (role === 'admin') document.getElementById('admin-tag').style.display = 'block';
-        fetchData();
+
+        if (role === 'admin') {
+            document.getElementById('admin-tag').style.display = 'inline-block';
+        }
+
+        // Trigger Data Load
+        fetchDashboardData();
+    } else {
+        errorMsg.innerText = "Invalid Access Code. Please try again.";
     }
 }
 
-async function fetchData() {
-    const { data } = await supabaseClient
-        .from('sales_data')
-        .select('payload')
-        .eq('id', 1)
-        .single();
+// 3. THE DATA FUNCTION
+async function fetchDashboardData() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('sales_data')
+            .select('payload')
+            .eq('id', 1)
+            .single();
 
-    if (data && data.payload) {
-        const p = data.payload;
-        
-        // Numerical Displays
-        document.getElementById('disp-revenue').innerText = `$${p.total_revenue.toLocaleString()}`;
-        document.getElementById('disp-units').innerText = p.total_units.toLocaleString();
-
-        // Whitelisted Exec Chart (Anas, Suhail, Salam, Manseer)
-        new Chart(document.getElementById('execBarChart'), {
-            type: 'bar',
-            data: {
-                labels: Object.keys(p.individual_sales),
-                datasets: [{ label: 'Performance', data: Object.values(p.individual_sales), backgroundColor: '#38bdf8' }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // Channel Split Chart (KDR vs Others)
-        new Chart(document.getElementById('channelPieChart'), {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(p.channel_split),
-                datasets: [{ data: Object.values(p.channel_split), backgroundColor: ['#0ea5e9', '#6366f1', '#10b981'] }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        if (error) throw error;
+        renderUI(data.payload);
+    } catch (err) {
+        console.error("Supabase Error:", err.message);
+        document.getElementById('error-msg').innerText = "Data load failed. Check Supabase connection.";
     }
+}
+
+function renderUI(p) {
+    document.getElementById('disp-revenue').innerText = `$${p.total_revenue.toLocaleString()}`;
+    document.getElementById('disp-units').innerText = p.total_units.toLocaleString();
+
+    // Render Charts (Standard Chart.js code)
+    new Chart(document.getElementById('execBarChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(p.individual_sales),
+            datasets: [{ label: 'Executive Sales', data: Object.values(p.individual_sales), backgroundColor: '#38bdf8' }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 }

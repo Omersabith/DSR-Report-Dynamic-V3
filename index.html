@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesPulse V5 | Stable</title>
+    <title>SalesPulse V5 | Production</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -17,15 +17,16 @@
                 <button onclick="handleLogin('admin')">Admin</button>
                 <button onclick="handleLogin('guest')">Guest</button>
             </div>
+            <p id="error-msg" style="color: #ff4d4d; margin-top: 10px; font-size: 0.8rem;"></p>
         </div>
     </div>
 
     <div id="dashboard-main" style="display: none;">
-        <header class="top-nav">
+        <nav class="top-nav">
             <h2>SalesPulse Dashboard</h2>
-            <div id="admin-tag" style="display: none;">ADMIN</div>
-        </header>
-
+            <div id="admin-tag" class="badge" style="display: none;">ADMIN</div>
+        </nav>
+        
         <div class="stats-grid">
             <div class="stat-card">
                 <label>Net Revenue</label>
@@ -38,15 +39,9 @@
         </div>
 
         <div class="visuals-grid">
-            <div class="chart-box full-width">
-                <canvas id="lineChart"></canvas>
-            </div>
-            <div class="chart-box split">
-                <canvas id="execBarChart"></canvas>
-            </div>
-            <div class="chart-box split">
-                <canvas id="channelPieChart"></canvas>
-            </div>
+            <div class="chart-box full-width"><canvas id="lineChart"></canvas></div>
+            <div class="chart-box split"><canvas id="execBarChart"></canvas></div>
+            <div class="chart-box split"><canvas id="channelPieChart"></canvas></div>
         </div>
     </div>
     <script src="script.js"></script>
