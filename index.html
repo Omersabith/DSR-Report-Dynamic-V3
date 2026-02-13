@@ -6,36 +6,30 @@
     <title>SalesPulse V5 | Production</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div id="login-container">
         <div class="login-card">
             <h1>SalesPulse V5</h1>
-            <input type="password" id="access-code" placeholder="Enter Code">
+            <input type="password" id="access-code" placeholder="Enter Access Code">
             <div class="btn-row">
-                <button onclick="handleLogin('admin')">Admin</button>
-                <button onclick="handleLogin('guest')">Guest</button>
+                <button type="button" onclick="handleLogin('admin')">Admin</button>
+                <button type="button" onclick="handleLogin('guest')">Guest</button>
             </div>
-            <p id="error-msg" style="color: #ff4d4d; margin-top: 10px; font-size: 0.8rem;"></p>
+            <p id="error-msg" style="color: #ff4d4d; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="dashboard-main" style="display: none;">
         <nav class="top-nav">
             <h2>SalesPulse Dashboard</h2>
-            <div id="admin-tag" class="badge" style="display: none;">ADMIN</div>
+            <div id="admin-tag" style="display: none; background: #0ea5e9; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">ADMIN</div>
         </nav>
         
         <div class="stats-grid">
-            <div class="stat-card">
-                <label>Net Revenue</label>
-                <div id="disp-revenue">0.00</div>
-            </div>
-            <div class="stat-card">
-                <label>Total Units</label>
-                <div id="disp-units">0</div>
-            </div>
+            <div class="stat-card"><label>Net Revenue</label><div id="disp-revenue">$0.00</div></div>
+            <div class="stat-card"><label>Total Units</label><div id="disp-units">0</div></div>
         </div>
 
         <div class="visuals-grid">

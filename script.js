@@ -1,35 +1,35 @@
-// 1. YOUR CONNECTION DATA
-const SB_URL = 'https://iyxpvbvpampykfjffgol.supabase.co'; 
-const SB_KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
-const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+// 1. Connection (Update these with your actual details)
+const SB_URL = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
+const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
 
-// 2. THE LOGIN FUNCTION
-async function handleLogin(role) {
-    const inputField = document.getElementById('access-code');
-    const errorMsg = document.getElementById('error-msg');
+function handleLogin(role) {
+    console.log("Login button clicked for:", role); // This will show in console to prove it's working
     
-    // Set your desired password here (e.g., '1234')
-    if (inputField.value === '1234') {
-        console.log("Login successful as:", role);
-        
-        // Hide Login, Show Dashboard
+    const input = document.getElementById('access-code');
+    const error = document.getElementById('error-msg');
+    
+    // Using 1234 as the default for now - update as needed
+    if (input.value === '1234') {
+        // HIDE LOGIN
         document.getElementById('login-container').style.display = 'none';
-        const dashboard = document.getElementById('dashboard-main');
-        dashboard.style.display = 'block';
+        
+        // SHOW DASHBOARD
+        const dash = document.getElementById('dashboard-main');
+        dash.style.display = 'block';
 
         if (role === 'admin') {
             document.getElementById('admin-tag').style.display = 'inline-block';
         }
 
-        // Trigger Data Load
-        fetchDashboardData();
+        // FETCH DATA
+        loadSalesPulseData();
     } else {
-        errorMsg.innerText = "Invalid Access Code. Please try again.";
+        error.innerText = "Invalid Access Code";
     }
 }
 
-// 3. THE DATA FUNCTION
-async function fetchDashboardData() {
+async function loadSalesPulseData() {
     try {
         const { data, error } = await supabaseClient
             .from('sales_data')
@@ -38,23 +38,31 @@ async function fetchDashboardData() {
             .single();
 
         if (error) throw error;
-        renderUI(data.payload);
+        
+        const p = data.payload;
+        
+        // Update Numbers
+        document.getElementById('disp-revenue').innerText = `$${p.total_revenue.toLocaleString()}`;
+        document.getElementById('disp-units').innerText = p.total_units.toLocaleString();
+
+        // Initialize Charts
+        initCharts(p);
     } catch (err) {
-        console.error("Supabase Error:", err.message);
-        document.getElementById('error-msg').innerText = "Data load failed. Check Supabase connection.";
+        console.error("Data Load Error:", err);
     }
 }
 
-function renderUI(p) {
-    document.getElementById('disp-revenue').innerText = `$${p.total_revenue.toLocaleString()}`;
-    document.getElementById('disp-units').innerText = p.total_units.toLocaleString();
-
-    // Render Charts (Standard Chart.js code)
+function initCharts(p) {
+    // Executive Performance (Anas, Suhail, Salam, Manseer)
     new Chart(document.getElementById('execBarChart'), {
         type: 'bar',
         data: {
             labels: Object.keys(p.individual_sales),
-            datasets: [{ label: 'Executive Sales', data: Object.values(p.individual_sales), backgroundColor: '#38bdf8' }]
+            datasets: [{
+                label: 'Executive Performance',
+                data: Object.values(p.individual_sales),
+                backgroundColor: '#38bdf8'
+            }]
         },
         options: { responsive: true, maintainAspectRatio: false }
     });
