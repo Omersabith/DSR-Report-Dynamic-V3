@@ -1,43 +1,69 @@
-const SUPABASE_URL = "https://ofvswjscvsmunonmclce.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mdnN3anNjdnNtdW5vbm1jbGNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1Nzc3OTcsImV4cCI6MjA1NDE1Mzc5N30.C6S6S0_T8S6S0_T8S6S0_T8S6S0_T8";
+// CONFIGURATION
+const SUPABASE_URL = 'https://iyxpvbvpampykfjffgol.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Q9IcqOv5IU9boMcm5fnG_w_je4xqV46';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function login() {
-    const user = document.getElementById('username').value;
+async function login(role) {
     const pass = document.getElementById('password').value;
-    if ((user === 'admin' && pass === 'password123') || (user === 'guest' && pass === '1234')) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('dashboard-wrapper').style.display = 'block';
-        document.body.style.display = 'block'; 
-        fetchData();
+    if (pass === "YOUR_CODE") {
+        const db = document.getElementById('dashboard');
+        document.getElementById('login-container').style.display = 'none';
+        
+        // STABILITY FIX: Show block first, then wait a frame before drawing charts
+        db.style.display = 'block';
+        setTimeout(() => { db.style.opacity = '1'; }, 50);
+
+        if(role === 'admin') document.getElementById('admin-badge').style.display = 'inline';
+        fetchAndRender();
     }
 }
 
-async function fetchData() {
+async function fetchAndRender() {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/sales_data?id=eq.1`, {
-            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-        });
-        const result = await response.json();
-        renderUI(result[0].data_payload);
-    } catch (err) { console.error("Fetch Error:", err); }
+        const { data, error } = await supabaseClient
+            .from('sales_data')
+            .select('payload')
+            .eq('id', 1)
+            .single();
+
+        if (error) throw error;
+        const p = data.payload;
+
+        // Populate Stats
+        document.getElementById('total-rev').innerText = (p.total_revenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('total-qty').innerText = (p.total_units || 0).toLocaleString();
+
+        renderCharts(p);
+    } catch (e) {
+        console.error("Data Load Failed:", e);
+    }
 }
 
-function renderUI(data) {
-    // KPI Cards (Fixed NaN logic)
-    document.getElementById('total-revenue').innerText = 
-        (data.kpi_summary?.total_revenue || 0).toLocaleString() + " OMR";
-    document.getElementById('growth-percent').innerText = 
-        data.kpi_summary?.growth || "0%";
-    document.getElementById('top-performer').innerText = 
-        data.kpi_summary?.top_performer || "N/A";
+function renderCharts(p) {
+    // Executive Chart (Whitelisted)
+    new Chart(document.getElementById('execChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(p.individual_sales || {}),
+            datasets: [{
+                label: 'Sales by Executive',
+                data: Object.values(p.individual_sales || {}),
+                backgroundColor: '#38bdf8'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 
-    // Staff Table
-    const tbody = document.getElementById('individual-table-body');
-    tbody.innerHTML = (data.individual_sales || []).map(s => `
-        <tr>
-            <td>${s.name}</td>
-            <td>${(s.mtd || 0).toLocaleString()} OMR</td>
-            <td>${s.qty || 0}</td>
-        </tr>
-    `).join('');
+    // Channel Chart (KDR vs Others)
+    new Chart(document.getElementById('channelChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(p.channel_split || {}),
+            datasets: [{
+                data: Object.values(p.channel_split || {}),
+                backgroundColor: ['#818cf8', '#fbbf24', '#34d399', '#f87171']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 }

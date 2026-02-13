@@ -2,30 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SalesPulse V5 Corporate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesPulse V5 | Production</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://io.supabase.co/js/supabase-js/v2"></script>
 </head>
 <body>
-    <div id="login-screen">
+    <div id="login-container">
         <div class="login-box">
-            <h2>SalesPulse Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="login()">Enter Dashboard</button>
+            <h2>SalesPulse V5</h2>
+            <input type="password" id="password" placeholder="Access Code">
+            <div class="btn-group">
+                <button onclick="login('admin')">Admin</button>
+                <button onclick="login('guest')">Guest</button>
+            </div>
         </div>
     </div>
 
-    <div id="dashboard-wrapper" style="display:none;">
-        <div class="kpi-grid">
-            <div class="card"><h3>Total Revenue</h3><p id="total-revenue">0.00 OMR</p></div>
-            <div class="card"><h3>Growth %</h3><p id="growth-percent">0%</p></div>
-            <div class="card"><h3>Top Performer</h3><p id="top-performer">N/A</p></div>
+    <div id="dashboard" style="display: none; opacity: 0;">
+        <header>
+            <h1>Corporate Intelligence Dashboard</h1>
+            <span id="admin-badge" class="badge" style="display:none">ADMIN</span>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card"><h3>Net Revenue</h3><p id="total-rev">0.00</p></div>
+            <div class="card"><h3>Total Units</h3><p id="total-qty">0</p></div>
         </div>
-        <table>
-            <thead><tr><th>Executive</th><th>MTD Sale</th><th>Qty</th></tr></thead>
-            <tbody id="individual-table-body"></tbody>
-        </table>
+
+        <div class="main-chart-area">
+            <div class="chart-wrapper">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="secondary-grid">
+            <div class="chart-wrapper"><canvas id="execChart"></canvas></div>
+            <div class="chart-wrapper"><canvas id="channelChart"></canvas></div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
