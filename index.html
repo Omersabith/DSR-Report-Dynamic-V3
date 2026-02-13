@@ -3,43 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesPulse V5 | Production</title>
+    <title>SalesPulse V5 | Stable</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://io.supabase.co/js/supabase-js/v2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div id="login-container">
-        <div class="login-box">
-            <h2>SalesPulse V5</h2>
-            <input type="password" id="password" placeholder="Access Code">
-            <div class="btn-group">
-                <button onclick="login('admin')">Admin</button>
-                <button onclick="login('guest')">Guest</button>
+        <div class="login-card">
+            <h1>SalesPulse V5</h1>
+            <input type="password" id="access-code" placeholder="Enter Code">
+            <div class="btn-row">
+                <button onclick="handleLogin('admin')">Admin</button>
+                <button onclick="handleLogin('guest')">Guest</button>
             </div>
         </div>
     </div>
 
-    <div id="dashboard" style="display: none; opacity: 0;">
-        <header>
-            <h1>Corporate Intelligence Dashboard</h1>
-            <span id="admin-badge" class="badge" style="display:none">ADMIN</span>
+    <div id="dashboard-main" style="display: none;">
+        <header class="top-nav">
+            <h2>SalesPulse Dashboard</h2>
+            <div id="admin-tag" style="display: none;">ADMIN</div>
         </header>
 
         <div class="stats-grid">
-            <div class="card"><h3>Net Revenue</h3><p id="total-rev">0.00</p></div>
-            <div class="card"><h3>Total Units</h3><p id="total-qty">0</p></div>
-        </div>
-
-        <div class="main-chart-area">
-            <div class="chart-wrapper">
-                <canvas id="revenueChart"></canvas>
+            <div class="stat-card">
+                <label>Net Revenue</label>
+                <div id="disp-revenue">0.00</div>
+            </div>
+            <div class="stat-card">
+                <label>Total Units</label>
+                <div id="disp-units">0</div>
             </div>
         </div>
 
-        <div class="secondary-grid">
-            <div class="chart-wrapper"><canvas id="execChart"></canvas></div>
-            <div class="chart-wrapper"><canvas id="channelChart"></canvas></div>
+        <div class="visuals-grid">
+            <div class="chart-box full-width">
+                <canvas id="lineChart"></canvas>
+            </div>
+            <div class="chart-box split">
+                <canvas id="execBarChart"></canvas>
+            </div>
+            <div class="chart-box split">
+                <canvas id="channelPieChart"></canvas>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
